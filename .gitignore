@@ -25,7 +25,7 @@ staticfiles/
 
 # Migrations (Optional)
 */migrations/*
-
+migrations/
 # Django Debug Toolbar
 debug_toolbar/
 
