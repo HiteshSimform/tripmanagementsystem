@@ -7,13 +7,12 @@ from apps.users.models import User
 
 @receiver(post_save, sender=User)
 def send_welcome_mail(sender, instance, created, **kwargs):
-    if created:
-        user_email = instance.email
+    if not created and instance.is_active and getattr(instance, "_email_just_verified", False):
         send_mail(
             subject="Welcome to TripSync!",
-            message=f"Hi {instance.username}, thank you for registering!",
+            message=f"Hi {instance.username}, thank you for verifying your email and joining TripSync!",
             from_email=settings.EMAIL_HOST_USER,
-            recipient_list=[user_email],
+            recipient_list=[instance.email],
             fail_silently=False,
         )
 
