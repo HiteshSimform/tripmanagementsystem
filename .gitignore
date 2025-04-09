@@ -55,3 +55,5 @@ cover_tests.xml
 
 # Deployment Files (Optional)
 __deploy__/
+
+migrations/
