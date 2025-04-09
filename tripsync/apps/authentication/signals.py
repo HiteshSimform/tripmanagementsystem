@@ -7,7 +7,7 @@ from apps.users.models import User
 
 @receiver(post_save, sender=User)
 def send_welcome_mail(sender, instance, created, **kwargs):
-    if not created and instance.is_active and getattr(instance, "_email_just_verified", False):
+    if not created and instance.is_active:
         send_mail(
             subject="Welcome to TripSync!",
             message=f"Hi {instance.username}, thank you for verifying your email and joining TripSync!",
@@ -15,6 +15,8 @@ def send_welcome_mail(sender, instance, created, **kwargs):
             recipient_list=[instance.email],
             fail_silently=False,
         )
+
+        # print("send_welcome_mail")
 
 
 @receiver(post_save, sender = User)
