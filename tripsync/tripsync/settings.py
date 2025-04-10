@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt.token_blacklist',
     'channels',
+    'guardian',
     'apps.attachments',
     'apps.authentication',
     'apps.dashboard',
@@ -169,3 +170,6 @@ EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
 # ASGI for Notification
 
 ASGI_APPLICATION = 'tripsync.asgi.application'
+
+# Django Guardian
+AUTHENTICATION_BACKENDS = ('django.contrib.auth.backends.ModelBackend', 'guardian.backends.ObjectPermissionBackend')

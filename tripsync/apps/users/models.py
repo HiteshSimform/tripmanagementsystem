@@ -8,7 +8,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         ('admin','Admin'),
         ('trip_admin','Trip Admin'),
         ('participant','Trip Participant'),
-        ('Viewer','Viewer'),
+        ('viewer','Viewer'),
         ('guest','Guest'),
     ]
 
