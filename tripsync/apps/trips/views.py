@@ -3,8 +3,10 @@ from apps.trips.serializers import TripActivitySerializer,TripInvitationSerializ
 from apps.trips.models import Trip,TripInvitation,TripActivity,TripItinerary,TripJoinRequest,TripParticipant
 from django.views import View
 from rest_framework import viewsets, permissions, status
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.views import APIView
+
+from .tasks import send_invitation_email
 
 # Create your views here.
 
@@ -12,6 +14,10 @@ class TripViewSet(viewsets.ModelViewSet):
     queryset = Trip.objects.all()
     serializer_class = TripSerializer
     permission_classes = [IsAuthenticated]
+
+
+    def retrieve(self, request, *args, **kwargs):
+        return super().retrieve(request, *args, **kwargs)
 
 class TripInvitationViewSet(viewsets.ModelViewSet):
     queryset = TripInvitation.objects.all()
@@ -37,3 +43,4 @@ class TripParticipantViewSet(viewsets.ModelViewSet):
     queryset = TripParticipant.objects.all()
     serializer_class = TripParticipant
     permission_classes = [IsAuthenticated]
+

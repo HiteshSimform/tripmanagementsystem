@@ -134,3 +134,8 @@ class TripInvitation(models.Model):
 # celery task
 # nested celery task
 # batch
+
+
+'''
+In this if trip is public than viewer can choose their trip and viewer and guest can see all the trips and if want to appear in trip user can send than mail to trip admin if trip admin accept that invitation than and than only user become participant of the trip, but if trip is private than trip admin send the mail or any notification to the user who trip admin want to send invitation, if user accept that invitation than they can be a part of that private trip
+'''

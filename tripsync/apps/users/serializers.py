@@ -33,12 +33,10 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
     def create(self,validated_data):
         validated_data.pop('confirm_password')
         user = User.objects.create_user(**validated_data)
-
-        # Create verification token
         token = RefreshToken.for_user(user).access_token
         EmailVerification.objects.create(user=user, token=str(token))
 
-        self.send_activation_email(user)  # send email
+        self.send_activation_email(user) 
         return user
     
     def send_activation_email(self, user):

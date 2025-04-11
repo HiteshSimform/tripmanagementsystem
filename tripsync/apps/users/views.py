@@ -73,3 +73,8 @@ class VerifyEmail(APIView):
         except Exception as e:
             print(str(e))
             return Response({'msg': 'Invalid or expired token'}, status=status.HTTP_400_BAD_REQUEST)
+        
+# reset password
+# confirmpassword
+# change password
+# 
