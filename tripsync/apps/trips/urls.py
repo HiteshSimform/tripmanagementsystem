@@ -11,7 +11,7 @@ from apps.trips.views import (
 
 # Create a router and register the viewsets
 router = DefaultRouter()
-router.register(r'trips', TripViewSet)
+router.register(r'trips', TripViewSet, basename='trip')
 router.register(r'trip-invitations', TripInvitationViewSet)
 router.register(r'trip-activities', TripActivityViewSet)
 router.register(r'trip-itineraries', TripItineraryViewSet)

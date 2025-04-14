@@ -5,19 +5,26 @@ from django.views import View
 from rest_framework import viewsets, permissions, status
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.views import APIView
-
+from django.db.models import Q
 from .tasks import send_invitation_email
 
 # Create your views here.
-
+# from rest_framework.throttling import UserRateThrottle
 class TripViewSet(viewsets.ModelViewSet):
-    queryset = Trip.objects.all()
+    # queryset = Trip.objects.all()
     serializer_class = TripSerializer
     permission_classes = [IsAuthenticated]
+    # throttle_classes = [UserRateThrottle]
 
-
-    def retrieve(self, request, *args, **kwargs):
-        return super().retrieve(request, *args, **kwargs)
+    def get_queryset(self):
+        user = self.request.user
+        if user.role == 'admin':
+            return Trip.objects.all()
+        else:
+            return Trip.objects.filter( 
+                Q(trip_visibility='public') |
+                Q(trip_visibility='private', trip_organizer=user)
+            )
 
 class TripInvitationViewSet(viewsets.ModelViewSet):
     queryset = TripInvitation.objects.all()

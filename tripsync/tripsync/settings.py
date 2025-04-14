@@ -61,15 +61,24 @@ INSTALLED_APPS = [
     'apps.users',
 ]
 
-# REST_FRAMEWORK = {
-#     # 'DEFAULT_AUTHENTICATION_CLASSES': [
-#     #     'rest_framework.authentication.SessionAuthentication',
-#     #     'rest_framework.authentication.BasicAuthentication',
-#     # ],
-#     'DEFAULT_PERMISSION_CLASSES': [
-#         'rest_framework.permissions.IsAuthenticated',
-#     ],
-# }
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        # 'rest_framework.authentication.SessionAuthentication',
+        # 'rest_framework.authentication.BasicAuthentication',
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
+    # 'DEFAULT_THROTTLE_CLASSES': [
+    #     'rest_framework.throttling.AnonRateThrottle',
+    #     'rest_framework.throttling.UserRateThrottle'
+    # ],
+    # 'DEFAULT_THROTTLE_RATES': {
+    #     'anon': '2/day',
+    #     'user': '10/day'
+    # }
+}
 
 
 AUTH_USER_MODEL = 'users.User'  
@@ -117,12 +126,12 @@ WSGI_APPLICATION = 'tripsync.wsgi.application'
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": "tripsync",
-        "USER": "postgres",
-        "PASSWORD": "hitesh123",
-        "HOST": "127.0.0.1",
-        "PORT": "5432",
+        "ENGINE": os.getenv('DATABASE_ENGINE', 'django.db.backends.postgresql'),
+        "NAME": os.getenv('DATABASE_NAME'),
+        "USER": os.getenv('DATABASE_USER'),
+        "PASSWORD": os.getenv('DATABASE_PASSWORD'),
+        "HOST": os.getenv('DATABASE_HOST', '127.0.0.1'),
+        "PORT": os.getenv('DATABASE_PORT', '5432'),
     }
 }
 
@@ -201,3 +210,11 @@ CELERY_RESULTS_BACKEND = "redis://localhost:6379/0"
 
 
 # CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
+
+from datetime import timedelta
+
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME":timedelta(minutes=20),
+    "REFRESH_TOKEN_LIFETIME":timedelta(days=1),
+    'BLACKLIST_AFTER_ROTATION': True,
+}
