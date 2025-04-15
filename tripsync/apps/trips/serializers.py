@@ -21,12 +21,12 @@ class TripItinerarySerializer(serializers.ModelSerializer):
         model = TripItinerary
         fields = "__all__"
 
-class TripJoinRequestSerializer(serializers.Serializer):
+class TripJoinRequestSerializer(serializers.ModelSerializer):
     class Meta:
         model = TripJoinRequest
         fields = "__all__"
 
-class TripParticipantSerializer(serializers.Serializer):
+class TripParticipantSerializer(serializers.ModelSerializer):
     class Meta:
         model = TripParticipant
         fields = "__all__"

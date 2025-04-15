@@ -43,11 +43,11 @@ class TripItineraryViewSet(viewsets.ModelViewSet):
 
 class TripJoinRequestViewSet(viewsets.ModelViewSet):
     queryset = TripJoinRequest.objects.all()
-    serializer_class = TripJoinRequest
+    serializer_class = TripJoinRequestSerializer
     permission_classes = [IsAuthenticated]
 
 class TripParticipantViewSet(viewsets.ModelViewSet):
     queryset = TripParticipant.objects.all()
-    serializer_class = TripParticipant
+    serializer_class = TripParticipantSerializer
     permission_classes = [IsAuthenticated]
 

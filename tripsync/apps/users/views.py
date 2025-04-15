@@ -14,6 +14,7 @@ import smtplib
 smtplib.SMTP.debuglevel = 1
 
 class RegisterAPIView(APIView):
+    permission_classes = []
     def post(self, request):
         serializer = UserRegistrationSerializer(data=request.data, context={'request': request})
         if serializer.is_valid():
@@ -54,6 +55,7 @@ class RegisterAPIView(APIView):
     
 
 class VerifyEmail(APIView):
+    permission_classes = []
     def get(self, request):
         token = request.GET.get('token')
         try:

@@ -1,27 +1,9 @@
-# from django.shortcuts import render
-# from apps.polls.models import Poll, PollOption, Vote
-# from apps.polls.serializers import PollSerializer, PollOptionSerializer, VoteSerializer
-# from rest_framework import generics
-# from rest_framework.permissions import IsAuthenticated
-# from rest_framework.response import Response
-# # Create your views here.
-
-# class PollList(generics.ListCreateAPIView):
-#     queryset = Poll.objects.all()
-#     serializer_class = [PollSerializer]
-#     permission_classes = [IsAuthenticated]
-    
-#     def list(self,request):
-#         queryset = self.get_queryset()
-#         serializer = PollSerializer(queryset, many = True)
-#         return Response(serializer.data)
-
-from rest_framework import viewsets, generics, permissions, status
+from rest_framework import viewsets, permissions, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from django.utils import timezone
 from apps.polls.models import Poll, PollOption, Vote
 from apps.polls.serializers import PollSerializer, PollOptionSerializer, VoteSerializer
-from django.utils import timezone
 
 class PollViewSet(viewsets.ModelViewSet):
     serializer_class = PollSerializer
@@ -48,14 +30,23 @@ class VoteAPIView(APIView):
         try:
             option = PollOption.objects.get(id=option_id)
         except PollOption.DoesNotExist:
-            return Response({"error": "Option not found"}, status=404)
+            return Response({"error": "Option not found"}, status=status.HTTP_404_NOT_FOUND)
 
-        # Prevent duplicate votes by user on same poll
-        if Vote.objects.filter(user=request.user, option__poll=option.poll).exists():
-            return Response({"error": "You have already voted"}, status=400)
+        poll = option.poll
+        if poll.has_expired():
+            return Response({"error": "Poll has expired"}, status=status.HTTP_400_BAD_REQUEST)
 
-        if option.poll.expires_at < timezone.now():
-            return Response({"error": "Poll has expired"}, status=400)
+        if Vote.objects.filter(poll=poll, voted_by=request.user).exists():
+            return Response({"error": "You have already voted"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        if poll.is_multiple_choice:
+            existing_votes = Vote.objects.filter(poll=poll, voted_by=request.user, option=option)
+        else:
+            existing_votes = Vote.objects.filter(poll=poll, voted_by=request.user)
 
-        vote = Vote.objects.create(user=request.user, option=option)
-        return Response(VoteSerializer(vote).data, status=201)
+        if existing_votes.exists():
+            return Response({"error": "You have already voted"}, status=status.HTTP_400_BAD_REQUEST)
+
+
+        vote = Vote.objects.create(poll=poll, option=option, voted_by=request.user)
+        return Response(VoteSerializer(vote).data, status=status.HTTP_201_CREATED)

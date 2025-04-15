@@ -3,7 +3,7 @@ from django.dispatch import receiver
 from django.core.mail import send_mail
 from django.conf import settings
 from apps.users.models import User
-from apps.trips.models import Trip, TripParticipant
+from apps.trips.models import Trip, TripParticipant, TripUserRelation
 
 # @receiver(post_save, sender=User)
 # def send_welcome_mail(sender, instance, created, **kwargs):
@@ -50,17 +50,31 @@ def update_role_on_registration(sender, instance, created, **kwargs):
 
 @receiver(post_save, sender= Trip)
 def update_role_on_trip_creation(sender, instance, created, **kwargs):
-    if created and instance.trip_organizer.role in ["viewer","participant"] :
-        instance.trip_organizer.role = "trip_admin"
-        instance.trip_organizer.save()
+    if created:
+        # instance.trip_organizer.role = "trip_admin"
+        # instance.trip_organizer.save()
+        trip_user_relation = TripUserRelation(
+            trip_id=instance,
+            user_id=instance.trip_organizer,
+            user_role='trip_admin'
+        )
+        trip_user_relation.save()
 
-@receiver(post_save, sender= Trip)
-def update_role_on_participation(sender,instance,**kwargs):
-    for participant in instance.participants.all():
-        if participant.role != "trip_admin":
-            participant.role = "participant"
-            participant.save()
+# @receiver(post_save, sender= Trip)
+# def update_role_on_participation(sender,instance,**kwargs):
+#     for participant in instance.participants.all():
+#         if participant.role != "trip_admin":
+#             participant.role = "participant"
+#             participant.save()
 
+
+@receiver(post_save, sender=TripParticipant)
+def update_trip_admin_to_participant(sender, instance, created, **kwargs):
+    if created:
+        user_roles_in_other_trips = instance.user.tripuserrelation_set.filter(user_role='trip_admin').exists()
+        if user_roles_in_other_trips and instance.role == 'participant':
+            instance.role = 'participant'  
+            instance.save()
 
 @receiver(post_save, sender=TripParticipant)
 def update_user_role_on_participation(sender, instance, created, **kwargs):

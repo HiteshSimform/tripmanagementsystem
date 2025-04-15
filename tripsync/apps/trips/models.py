@@ -128,6 +128,17 @@ class TripInvitation(models.Model):
         return f"Invited to {self.email} for {self.trip} ({self.status})"
     
 
+class TripUserRelation(models.Model):
+    ROLE_CHOICE = [
+        ('admin','Admin'),
+        ('trip_admin','Trip Admin'),
+        ('participant','Trip Participant'),
+        ('viewer','Viewer'),
+        ('guest','Guest'),
+    ]
+    trip_id = models.ForeignKey(Trip,on_delete=models.CASCADE)
+    user_id = models.ForeignKey(User, on_delete=models.CASCADE)
+    user_role = models.CharField(max_length=20,choices=ROLE_CHOICE,default="guest")
 
 
 # ?batch mail, concorrent, time.sleep, context switching, 
