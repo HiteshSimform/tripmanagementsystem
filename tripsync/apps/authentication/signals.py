@@ -4,6 +4,7 @@ from django.core.mail import send_mail
 from django.conf import settings
 from apps.users.models import User
 
+
 @receiver(pre_save, sender=User)
 def cache_user_activation_status(sender, instance, **kwargs):
     try:
@@ -11,6 +12,7 @@ def cache_user_activation_status(sender, instance, **kwargs):
         instance._was_inactive = not old_instance.is_active and instance.is_active
     except User.DoesNotExist:
         instance._was_inactive = False
+
 
 @receiver(post_save, sender=User)
 def send_welcome_mail(sender, instance, created, **kwargs):

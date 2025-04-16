@@ -1,6 +1,7 @@
 from django.contrib import admin
-from apps.users.models import User, EmailVerification
+from apps.trips.models import Trip, TripParticipant
+
 # Register your models here.
 
-admin.site.register(User)
-admin.site.register(EmailVerification)
+admin.site.register(Trip)
+admin.site.register(TripParticipant)
