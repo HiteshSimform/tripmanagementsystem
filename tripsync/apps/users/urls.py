@@ -18,3 +18,4 @@ urlpatterns = [
         "register/delete/<int:pk>/", RegisterAPIView.as_view(), name="delete-user"
     ),
 ]
+
