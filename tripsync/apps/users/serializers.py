@@ -47,3 +47,10 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
             from_email=os.getenv("EMAIL_HOST_USER"),
             recipient_list=[user.email],
         )
+
+
+# --- User Serializer (Light version for join request) ---
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ["id", "username", "email"]

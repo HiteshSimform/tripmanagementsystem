@@ -18,5 +18,11 @@ app.conf.beat_schedule = {
         # 'schedule': 60.0
         "schedule": crontab(minute="*/1"),
     },
+
+    'send-trip-reminder-emails': {
+        'task': 'apps.trips.tasks.send_trip_reminder_email',
+        'schedule': crontab(minute="*/1"),  # Run daily at midnight
+        'args': (1,),  # The trip_id can be dynamically passed
+    },
 }
 app.conf.timezone = "UTC"

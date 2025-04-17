@@ -1,0 +1,12 @@
+CREATE OR REPLACE FUNCTION get_total_trip_participants(p_trip_id INT)
+RETURNS INT AS $$
+DECLARE
+    participant_count INT;
+BEGIN
+    SELECT COUNT(*) INTO participant_count
+    FROM trips_tripparticipant
+    WHERE trip_id = p_trip_id;
+
+    RETURN participant_count;
+END;
+$$ LANGUAGE plpgsql;

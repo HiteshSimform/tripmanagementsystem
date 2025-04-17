@@ -22,6 +22,8 @@ from apps.trips.views import (
     TripParticipantDeleteView,
     TripParticipantListView,
     TripParticipantUpdateView,
+    TripJoinRequestCreateView,
+    TripJoinRequestActionView,
 )
 
 urlpatterns = [
@@ -44,5 +46,15 @@ urlpatterns = [
         "participants/<int:pk>/delete/",
         TripParticipantDeleteView.as_view(),
         name="participant-delete",
+    ),
+    path(
+        "trip-join-request/",
+        TripJoinRequestCreateView.as_view(),
+        name="trip-join-request-create",
+    ),
+    path(
+        "trip-join-request/<int:pk>/",
+        TripJoinRequestActionView.as_view(),
+        name="trip-join-request-action",
     ),
 ]

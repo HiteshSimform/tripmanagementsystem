@@ -81,6 +81,42 @@ class TripUserRelation(models.Model):
         ("viewer", "Viewer"),
         ("guest", "Guest"),
     ]
-    trip_id = models.ForeignKey(Trip, on_delete=models.CASCADE)
-    user_id = models.ForeignKey(User, on_delete=models.CASCADE)
+    trip = models.ForeignKey(Trip, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     user_role = models.CharField(max_length=20, choices=ROLE_CHOICE, default="guest")
+
+
+class TripJoinRequest(models.Model):
+    STATUS_CHOICES = [
+        ("pending", "Pending"),
+        ("approved", "Approved"),
+        ("rejected", "Rejected"),
+    ]
+
+    trip = models.ForeignKey(
+        "Trip", on_delete=models.CASCADE, related_name="trip_join_requests"
+    )
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    message = models.TextField(blank=True)
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default="pending")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ("trip", "user")  # Prevent duplicate join requests
+
+    def clean(self):
+        # Prevent join request to private trips if user is neither organizer nor participant
+        from .models import TripUserRelation
+
+        if self.trip.trip_visibility == "private":
+            is_member = TripUserRelation.objects.filter(
+                trip=self.trip, user=self.user
+            ).exists()
+
+            if not is_member:
+                raise ValidationError(
+                    "You can't request to join a private trip you're not a part of."
+                )
+
+    def __str__(self):
+        return f"JoinRequest: {self.user.username} → {self.trip.trip_title} [{self.status}]"

@@ -1,0 +1,18 @@
+<html>
+<head>
+    <title>Trip Reminder</title>
+</head>
+<body>
+    <h2>Hello {{ user.first_name }},</h2>
+    <p>Just a quick reminder that your trip <strong>{{ trip.name }}</strong> is tomorrow!</p>
+    <p>Here are the details:</p>
+    <ul>
+        <li><strong>Trip Name:</strong> {{ trip.name }}</li>
+        <li><strong>Date:</strong> {{ trip.trip_date }}</li>
+        <li><strong>Location:</strong> {{ trip.location }}</li>
+    </ul>
+    <p>We hope you have a great time!</p>
+    <p>Best regards,</p>
+    <p>Your Trip Team</p>
+</body>
+</html>

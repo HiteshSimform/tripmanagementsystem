@@ -45,12 +45,23 @@ from rest_framework.generics import (
     DestroyAPIView,
 )
 from rest_framework.permissions import IsAuthenticated
-from apps.trips.permissions import IsTripOrganizerOrReadOnly
-from apps.trips.serializers import TripSerializer, TripParticipantSerializer
-from apps.trips.models import Trip, TripParticipant
+from apps.trips.permissions import (
+    IsTripOrganizerOrReadOnly,
+    IsTripAdmin,
+    IsTripOrganizer,
+)
+from apps.trips.serializers import (
+    TripSerializer,
+    TripParticipantSerializer,
+    TripJoinRequestActionSerializer,
+    TripJoinRequestSerializer,
+)
+from apps.trips.models import Trip, TripParticipant, TripUserRelation, TripJoinRequest
 from django.db.models import Q
 from rest_framework.generics import ListAPIView, RetrieveUpdateAPIView
-from rest_framework import status
+from rest_framework import status, generics, permissions, serializers
+from .emails import send_join_request_notification
+from django.core.exceptions import ValidationError
 
 
 class TripListCreateView(ListCreateAPIView):
@@ -81,10 +92,6 @@ class TripParticipantCreateView(CreateAPIView):
     permission_classes = [IsAuthenticated]
 
 
-class TripParticipantDeleteView(DestroyAPIView):
-    queryset = TripParticipant.objects.all()
-    serializer_class = TripParticipantSerializer
-    permission_classes = [IsAuthenticated]
 
 
 class TripParticipantListView(ListAPIView):
@@ -115,3 +122,33 @@ class TripParticipantDeleteView(DestroyAPIView):
             {"message": "Trip participant deleted successfully!"},
             status=status.HTTP_200_OK,
         )
+
+
+# 1. Submit a Trip Join Request
+class TripJoinRequestCreateView(generics.CreateAPIView):
+    queryset = TripJoinRequest.objects.all()
+    serializer_class = TripJoinRequestSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def perform_create(self, serializer):
+        try:
+            join_request = serializer.save()
+            send_join_request_notification(join_request)  # Notify trip admin via email
+        except ValidationError as e:
+            raise serializers.ValidationError(e.message_dict)
+
+
+# 2. Approve/Reject Join Request (Trip Admins only)
+class TripJoinRequestActionView(generics.UpdateAPIView):
+    queryset = TripJoinRequest.objects.all()
+    serializer_class = TripJoinRequestActionSerializer
+    permission_classes = [IsAuthenticated, IsTripOrganizer]
+
+    def get_queryset(self):
+        return TripJoinRequest.objects.filter(status="pending")
+
+
+class TripJoinRequestDetailView(generics.UpdateAPIView):
+    queryset = TripJoinRequest.objects.all()
+    serializer_class = TripJoinRequestActionSerializer
+    permission_classes = [permissions.IsAuthenticated, IsTripOrganizer]
