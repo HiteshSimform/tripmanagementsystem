@@ -49,7 +49,6 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         )
 
 
-# --- User Serializer (Light version for join request) ---
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User

@@ -109,3 +109,13 @@ class VerifyEmail(APIView):
 # confirmpassword
 # change password
 #
+
+from django.shortcuts import render
+
+
+def my_view(request):
+    context = {
+        "title": "My Jinja2 Template Example",
+        "items": ["Item 1", "Item 2", "Item 3"],
+    }
+    return render(request, "index.html", context)

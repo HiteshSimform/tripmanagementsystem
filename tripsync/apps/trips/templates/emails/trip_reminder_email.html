@@ -3,13 +3,13 @@
     <title>Trip Reminder</title>
 </head>
 <body>
-    <h2>Hello {{ user.first_name }},</h2>
-    <p>Just a quick reminder that your trip <strong>{{ trip.name }}</strong> is tomorrow!</p>
+    <h2>Hello {{ user.username }},</h2>
+    <p>Just a quick reminder that your trip <strong>{{ trip.trip_title }}</strong> is tomorrow!</p>
     <p>Here are the details:</p>
     <ul>
-        <li><strong>Trip Name:</strong> {{ trip.name }}</li>
-        <li><strong>Date:</strong> {{ trip.trip_date }}</li>
-        <li><strong>Location:</strong> {{ trip.location }}</li>
+        <li><strong>Trip Name:</strong> {{ trip.trip_title }}</li>
+        <li><strong>Date:</strong> {{ trip.start_date }}</li>
+        <li><strong>Location:</strong> {{ trip.trip_destination }}</li>
     </ul>
     <p>We hope you have a great time!</p>
     <p>Best regards,</p>

@@ -7,6 +7,7 @@ from apps.users.serializers import UserSerializer
 class TripSerializer(serializers.ModelSerializer):
     participants = serializers.SerializerMethodField()
     total_participants = serializers.SerializerMethodField()
+
     class Meta:
         model = Trip
         # fields = "__all__"
@@ -29,15 +30,12 @@ class TripSerializer(serializers.ModelSerializer):
 
     def get_participants(self, obj):
         user = self.context["request"].user
-        # organizer_email = obj.trip_organizer.email
         trip_name = obj.trip_title
 
-        # Check if user is organizer or a participant
         if (
             user == obj.trip_organizer
             or TripParticipant.objects.filter(user=user, trip=obj).exists()
         ):
-            # Use the TripParticipant relation
             return [
                 f"{participant.user.username} in ({trip_name})"
                 for participant in obj.participants.all()
@@ -60,10 +58,10 @@ class TripSerializer(serializers.ModelSerializer):
         if start_date and end_date and end_date < start_date:
             raise serializers.ValidationError("End date must be after start date.")
         return data
-    
-    # Store Procedure
+
     def get_total_participants(self, obj):
         from apps.trips.utils import get_total_trip_participants
+
         return get_total_trip_participants(obj.id)
 
 
@@ -90,13 +88,13 @@ class TripJoinRequestSerializer(serializers.ModelSerializer):
         user = request.user
         trip = validated_data["trip"]
 
-        # Prevent duplicate join request manually (as safety net)
         if TripJoinRequest.objects.filter(user=user, trip=trip).exists():
             raise serializers.ValidationError(
                 "You have already requested to join this trip."
             )
 
-        return TripJoinRequest.objects.create(user=user, **validated_data)
+        # return TripJoinRequest.objects.create(user=user, **validated_data)
+        return TripJoinRequest.objects.create(**validated_data)
 
 
 class TripJoinRequestActionSerializer(serializers.ModelSerializer):
@@ -116,13 +114,10 @@ class TripJoinRequestActionSerializer(serializers.ModelSerializer):
 
         if action == "approve":
             instance.status = "approved"
-
-            # Add to TripParticipant
             TripParticipant.objects.get_or_create(
                 user=instance.user, trip=instance.trip
             )
 
-            # Also add to TripUserRelation with role 'participant'
             TripUserRelation.objects.get_or_create(
                 user=instance.user,
                 trip_id=instance.trip,
@@ -134,3 +129,29 @@ class TripJoinRequestActionSerializer(serializers.ModelSerializer):
 
         instance.save()
         return instance
+
+
+class TripPublicPreviewSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Trip
+        fields = ["id", "title", "description", "start_date", "end_date", "location"]
+
+
+class JoinRequestSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TripJoinRequest
+        fields = "__all__"
+        read_only_fields = ["status", "created_at", "user"]
+
+
+class TripPublicPreviewSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Trip
+        fields = [
+            "id",
+            "trip_title",
+            "trip_destination",
+            "trip_description",
+            "start_date",
+            "end_date",
+        ]

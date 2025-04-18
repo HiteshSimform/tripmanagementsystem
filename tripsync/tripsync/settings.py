@@ -61,6 +61,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "apps.users.user_activity_logger.UserActivityLoggerMiddleware",
 ]
 
 ROOT_URLCONF = "tripsync.urls"
@@ -79,16 +80,13 @@ TEMPLATES = [
             ],
         },
     },
-    # {
-    #     'BACKEND': 'django.template.backends.jinja2.Jinja2',
-    #     'DIRS': [
-    #         BASE_DIR / 'templates',  # Add this to locate the Jinja templates
-    #     ],
-    #     'APP_DIRS': True,
-    #     'OPTIONS': {
-    #         'environment': 'tripsync.jinja2.environment',
-    #     },
-    # },
+    {
+        "BACKEND": "django.template.backends.jinja2.Jinja2",
+        "DIRS": [
+            BASE_DIR / "templates",  # path where Jinja2 templates are stored
+        ],
+        "APP_DIRS": True,
+    },
 ]
 
 WSGI_APPLICATION = "tripsync.wsgi.application"
@@ -104,17 +102,6 @@ AUTH_USER_MODEL = "users.User"
 #     'default': {
 #         'ENGINE': 'django.db.backends.sqlite3',
 #         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
-
-# DATABASES = {
-#     "default": {
-#         "ENGINE": os.getenv("DATABASE_ENGINE"),
-#         "NAME": os.getenv("DATABASE_NAME"),
-#         "USER": os.getenv("DATABASE_USER"),
-#         "PASSWORD": os.getenv("DATABASE_PASSWORD"),
-#         "HOST": os.getenv("DATABASE_HOST"),
-#         "PORT": os.getenv("DATABASE_PORT"),
 #     }
 # }
 DATABASES = {
@@ -182,14 +169,14 @@ REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": [
         "rest_framework.permissions.IsAuthenticated",
     ],
-    # 'DEFAULT_THROTTLE_CLASSES': [
-    #     'rest_framework.throttling.AnonRateThrottle',
-    #     'rest_framework.throttling.UserRateThrottle'
-    # ],
-    # 'DEFAULT_THROTTLE_RATES': {
-    #     'anon': '2/day',
-    #     'user': '1000/day'
-    # }
+    'DEFAULT_THROTTLE_CLASSES': [
+        'rest_framework.throttling.AnonRateThrottle',
+        'rest_framework.throttling.UserRateThrottle'
+    ],
+    'DEFAULT_THROTTLE_RATES': {
+        'anon': '2/day',
+        'user': '1000/day'
+    }
 }
 
 
@@ -222,9 +209,6 @@ CELERY_TASK_SERIALIZER = "json"
 CELERY_RESULTS_BACKEND = "redis://localhost:6379/0"
 
 
-# CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
-
-
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=20),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
@@ -233,4 +217,31 @@ SIMPLE_JWT = {
     "SLIDING_TOKEN_REFRESH_LIFETIME": timedelta(days=1),
     "SLIDING_TOKEN_LIFETIME_LATE_USER": timedelta(days=30),
     "SLIDING_TOKEN_REFRESH_LIFETIME_LATE_USER": timedelta(days=1),
+}
+
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "activity_file": {
+            "level": "INFO",
+            "class": "logging.FileHandler",
+            "filename": BASE_DIR / "logs/activity.log",
+            "formatter": "detailed",
+        },
+    },
+    "formatters": {
+        "detailed": {
+            "format": "[{asctime}] {levelname} {message}",
+            "style": "{",
+        },
+    },
+    "loggers": {
+        "user_activity": {
+            "handlers": ["activity_file"],
+            "level": "INFO",
+            "propagate": False,
+        },
+    },
 }

@@ -1,5 +1,5 @@
 from django.contrib import admin
-from apps.trips.models import Trip, TripParticipant,TripJoinRequest, TripUserRelation
+from apps.trips.models import Trip, TripParticipant, TripJoinRequest, TripUserRelation
 
 # Register your models here.
 

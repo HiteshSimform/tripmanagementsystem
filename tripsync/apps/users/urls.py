@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import RegisterAPIView, VerifyEmail
+from .views import RegisterAPIView, VerifyEmail, my_view
 from rest_framework_simplejwt.views import TokenRefreshView
 
 urlpatterns = [
@@ -9,4 +9,5 @@ urlpatterns = [
     path("email-verify/", VerifyEmail.as_view(), name="email-verify"),
     path("register/<int:pk>/", RegisterAPIView.as_view(), name="register-detail"),
     path("register/delete/<int:pk>/", RegisterAPIView.as_view(), name="delete-user"),
+    path("homejinja/", my_view, name="homejinja"),
 ]

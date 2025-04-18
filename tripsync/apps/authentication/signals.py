@@ -17,7 +17,7 @@ def cache_user_activation_status(sender, instance, **kwargs):
 @receiver(post_save, sender=User)
 def send_welcome_mail(sender, instance, created, **kwargs):
     if not created and hasattr(instance, "_was_inactive") and instance._was_inactive:
-        print(">>> Sending welcome email to:", instance.email)
+        print("Email Send to : ", instance.email)
 
         send_mail(
             subject="Welcome to TripSync!",

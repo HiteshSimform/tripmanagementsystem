@@ -1,19 +1,3 @@
-# from django.urls import path, include
-# from rest_framework.routers import DefaultRouter
-# # from apps.trips.views import TripViewSet,TripParticipantViewSet
-
-# from
-
-# # Create a router and register the viewsets
-# router = DefaultRouter()
-# router.register(r'trips', TripViewSet, basename='trip')
-# router.register(r'trip-participants', TripParticipantViewSet)
-
-# # URLs to be included in the project
-# urlpatterns = [
-#     path('', include(router.urls)),
-# ]
-
 from django.urls import path
 from apps.trips.views import (
     TripListCreateView,
@@ -24,6 +8,8 @@ from apps.trips.views import (
     TripParticipantUpdateView,
     TripJoinRequestCreateView,
     TripJoinRequestActionView,
+    TripPreviewAPIView,
+    CancelJoinRequestAPIView,
 )
 
 urlpatterns = [
@@ -56,5 +42,15 @@ urlpatterns = [
         "trip-join-request/<int:pk>/",
         TripJoinRequestActionView.as_view(),
         name="trip-join-request-action",
+    ),
+    path(
+        "trips/preview/<int:pk>/",
+        TripPreviewAPIView.as_view(),
+        name="trip-public-preview",
+    ),
+    path(
+        "trips/join-request/<int:request_id>/cancel/",
+        CancelJoinRequestAPIView.as_view(),
+        name="cancel-join-request",
     ),
 ]

@@ -7,6 +7,7 @@ from django.utils import timezone
 import uuid
 from datetime import date, datetime
 from django.core.exceptions import ValidationError
+import uuid
 
 
 class Trip(models.Model):
@@ -102,10 +103,9 @@ class TripJoinRequest(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        unique_together = ("trip", "user")  # Prevent duplicate join requests
+        unique_together = ("trip", "user")
 
     def clean(self):
-        # Prevent join request to private trips if user is neither organizer nor participant
         from .models import TripUserRelation
 
         if self.trip.trip_visibility == "private":
