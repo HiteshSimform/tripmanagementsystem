@@ -2,6 +2,7 @@ from rest_framework import serializers
 from apps.trips.models import Trip, TripParticipant, TripJoinRequest, TripUserRelation
 from datetime import date
 from apps.users.serializers import UserSerializer
+from apps.trips.utils import get_total_trip_participants_proc
 
 
 class TripSerializer(serializers.ModelSerializer):
@@ -60,9 +61,7 @@ class TripSerializer(serializers.ModelSerializer):
         return data
 
     def get_total_participants(self, obj):
-        from apps.trips.utils import get_total_trip_participants
-
-        return get_total_trip_participants(obj.id)
+        return get_total_trip_participants_proc(obj.id)
 
 
 class TripParticipantSerializer(serializers.ModelSerializer):
