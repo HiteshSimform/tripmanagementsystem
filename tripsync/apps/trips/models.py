@@ -28,7 +28,8 @@ class Trip(models.Model):
     )
     trip_image = models.ImageField(upload_to="trip_images/", null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    updated_at = models.DateTimeField(auto_now=True,null=True)
+    deleted_at = models.DateTimeField(auto_now=True,null=True)
 
     trip_participants = models.ManyToManyField(
         User, related_name="joined_trips", blank=True
@@ -59,6 +60,9 @@ class TripParticipant(models.Model):
         Trip, on_delete=models.CASCADE, related_name="participants"
     )
     joined_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True,null=True)
+    updated_at = models.DateTimeField(auto_now=True,null=True)
+    deleted_at = models.DateTimeField(auto_now=True,null=True)
 
     class Meta:
         unique_together = ("trip", "user")
@@ -85,6 +89,9 @@ class TripUserRelation(models.Model):
     trip = models.ForeignKey(Trip, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     user_role = models.CharField(max_length=20, choices=ROLE_CHOICE, default="guest")
+    created_at = models.DateTimeField(auto_now_add=True,null=True)
+    updated_at = models.DateTimeField(auto_now=True,null=True)
+    deleted_at = models.DateTimeField(auto_now=True,null=True)
 
 
 class TripJoinRequest(models.Model):
@@ -101,6 +108,8 @@ class TripJoinRequest(models.Model):
     message = models.TextField(blank=True)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default="pending")
     created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True)
+    deleted_at = models.DateTimeField(auto_now=True, null=True)
 
     class Meta:
         unique_together = ("trip", "user")
